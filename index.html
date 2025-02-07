@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { text-align: center; margin-top: 18px; }
+        h1 { font-size: 28px; margin-bottom: 10px; }
+        table { margin: 20px auto; border-collapse: collapse; width: 90%; max-width: 600px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+        th { background-color: #f4f4f4; }
+        td.date-time-column { 
+            width: 300px; /* Set a wider column for date/time */
+        }
+        td[style*="background-color"] { 
+            font-size: 18px; /* Increase font size for AQHI values */
+            font-weight: bold; /* Make it bold */
+        }
+        img {
+            width: 400px; /* Adjust as needed */
+        }        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Station</th>
+                    <th>Current AQHI</th>
+                    <th>Last Updated</th>
+                    <th>Forecast Today</th>
+                    <th>Forecast Tonight</th>
+                    <th>Forecast Tomorrow</th>
+                </tr>
+            </thead>
+            <tbody id="aqhiTableBody">
+                <!-- Rows will be inserted dynamically -->
+            </tbody>
+        </table>
+        <img src="aqhilegend.png">
+    </div>
+    
+    <script>
+        function validateAQHI(aqhi) {
+            return Number(aqhi) > 10 ? '10+' : aqhi;
+        }
+
+        function getAQHIColor(aqhi) {
+            const aqhiNumeric = Number(aqhi);
+            if (isNaN(aqhiNumeric)) {
+                return "#808080"; // Gray for invalid numeric values
+            } else if (aqhiNumeric === 1) {
+                return "#01cbff"; // HEX code for AQHI 1
+            } else if (aqhiNumeric === 2) {
+                return "#0099cb"; // HEX code for AQHI 2
+            } else if (aqhiNumeric === 3) {
+                return "#016797"; // HEX code for AQHI 3
+            } else if (aqhiNumeric === 4) {
+                return "#fffe03"; // HEX code for AQHI 4
+            } else if (aqhiNumeric === 5) {
+                return "#ffcb00"; // HEX code for AQHI 5
+            } else if (aqhiNumeric === 6) {
+                return "#ff9835"; // HEX code for AQHI 6
+            } else if (aqhiNumeric === 7) {
+                return "#fd6866"; // HEX code for AQHI 7
+            } else if (aqhiNumeric === 8) {
+                return "#fe0002"; // HEX code for AQHI 8
+            } else if (aqhiNumeric === 9) {
+                return "#cc0001"; // HEX code for AQHI 9
+            } else if (aqhiNumeric === 10) {
+                return "#9a0100"; // HEX code for AQHI 10
+            } else {
+                return "#808080"; // Default to gray for any unexpected values
+            }
+        }
+
+        async function fetchAQHI() {
+            const url = "https://data.environment.alberta.ca/EdwServices/aqhi/odata/CommunityAqhis?$format=json";
+            const stations = ["Genesee", "Steeper", "Edson", "Hinton", "Drayton Valley", "Jasper"];
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const tableBody = document.getElementById('aqhiTableBody');
+
+                stations.forEach(stationName => {
+                    const stationData = data.value.find(community => community.CommunityName === stationName);
+                    if (stationData) {
+                        const currentAQHI = stationData.Aqhi || "N/A";
+                        const forecastToday = stationData.ForecastToday || "N/A";
+                        const forecastTonight = stationData.ForecastTonight || "N/A";
+                        const forecastTomorrow = stationData.ForecastTomorrow || "N/A";
+                        const readingDate = stationData.ReadingDate ? new Date(stationData.ReadingDate).toLocaleString() : "N/A";
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${stationName}</td>
+                            <td style="background-color: ${getAQHIColor(currentAQHI)}">${currentAQHI}</td>
+                            <td>${readingDate}</td>
+                            <td style="background-color: ${getAQHIColor(forecastToday)}">${forecastToday}</td>
+                            <td style="background-color: ${getAQHIColor(forecastTonight)}">${forecastTonight}</td>
+                            <td style="background-color: ${getAQHIColor(forecastTomorrow)}">${forecastTomorrow}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    } else {
+                        console.warn(`No data found for station: ${stationName}`);
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching AQHI data:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAQHI();
+        });
+    </script>
+</body>
+</html>
