@@ -32,7 +32,7 @@
                     <th>Last Updated</th>
                     <th>Forecast Today</th>
                     <th>Forecast Tonight</th>
-                    <th>Forecast Tomorrow</th>
+                <!--    <th>Forecast Tomorrow</th>  -->
                 </tr>
             </thead>
             <tbody id="aqhiTableBody">
@@ -90,7 +90,7 @@
                         const currentAQHI = stationData.Aqhi || "N/A";
                         const forecastToday = stationData.ForecastToday || "N/A";
                         const forecastTonight = stationData.ForecastTonight || "N/A";
-                        const forecastTomorrow = stationData.ForecastTomorrow || "N/A";
+                        <!--  const forecastTomorrow = stationData.ForecastTomorrow || "N/A";  -->
                         const readingDate = stationData.ReadingDate ? new Date(stationData.ReadingDate).toLocaleString() : "N/A";
 
                         const row = document.createElement('tr');
@@ -100,7 +100,7 @@
                             <td>${readingDate}</td>
                             <td style="background-color: ${getAQHIColor(forecastToday)}">${forecastToday}</td>
                             <td style="background-color: ${getAQHIColor(forecastTonight)}">${forecastTonight}</td>
-                            <td style="background-color: ${getAQHIColor(forecastTomorrow)}">${forecastTomorrow}</td>
+                           <!--  <td style="background-color: ${getAQHIColor(forecastTomorrow)}">${forecastTomorrow}</td>  -->
                         `;
                         tableBody.appendChild(row);
                     } else {
