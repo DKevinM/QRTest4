@@ -47,6 +47,7 @@
                     <th>Current AQHI</th>
                     <th>Last Updated</th>
                     <th>Forecast Today</th>
+                    <th>Forecast Tonight</th>
                     <th>Forecast Tomorrow</th>
                 </tr>
             </thead>
@@ -104,6 +105,7 @@
                     if (stationData) {
                         const currentAQHI = stationData.Aqhi || "N/A";
                         const forecastToday = stationData.ForecastToday || "N/A";
+                        const forecastTonight = stationData.ForecastTonight || "N/A";                        
                         const forecastTomorrow = stationData.ForecastTomorrow || "N/A";
                         const readingDate = stationData.ReadingDate ? new Date(stationData.ReadingDate).toLocaleString() : "N/A";
 
@@ -113,6 +115,7 @@
                             <td style="background-color: ${getAQHIColor(currentAQHI)}">${currentAQHI}</td>
                             <td>${readingDate}</td>
                             <td style="background-color: ${getAQHIColor(forecastToday)}">${forecastToday}</td>
+                            <td style="background-color: ${getAQHIColor(forecastTonight)}">${forecastTonight}</td>                            
                             <td style="background-color: ${getAQHIColor(forecastTomorrow)}">${forecastTomorrow}</td> 
                         `;
                         tableBody.appendChild(row);
