@@ -43,7 +43,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>Station</th>
+                    <th>Community</th>
                     <th>Current AQHI</th>
                     <th>Last Updated</th>
                     <th>Forecast Today</th>
@@ -55,7 +55,7 @@
                 <!-- Rows will be inserted dynamically -->
             </tbody>
         </table>
-        <img src="aqhilegend.png">
+        <img src="aep-aqhi-scale.png">
     </div>
     
     <script>
@@ -66,7 +66,7 @@
         function getAQHIColor(aqhi) {
             const aqhiNumeric = Number(aqhi);
             if (isNaN(aqhiNumeric)) {
-                return "#808080"; // Gray for invalid numeric values
+                return "#D3D3D3"; // Gray for invalid numeric values
             } else if (aqhiNumeric === 1) {
                 return "#01cbff"; // HEX code for AQHI 1
             } else if (aqhiNumeric === 2) {
@@ -88,13 +88,13 @@
             } else if (aqhiNumeric === 10) {
                 return "#9a0100"; // HEX code for AQHI 10
             } else {
-                return "#808080"; // Default to gray for any unexpected values
+                return "#D3D3D3"; // Default to gray for any unexpected values
             }
         }
 
         async function fetchAQHI() {
             const url = "https://data.environment.alberta.ca/EdwServices/aqhi/odata/CommunityAqhis?$format=json";
-            const stations = ["Genesee", "Steeper", "Edson", "Hinton", "Drayton Valley", "Jasper"];
+            const stations = ["Drayton Valley", "Edson", "Genesee", "Hinton", "Steeper", "Jasper"];
             try {
                 const response = await fetch(url);
                 const data = await response.json();
@@ -103,10 +103,10 @@
                 stations.forEach(stationName => {
                     const stationData = data.value.find(community => community.CommunityName === stationName);
                     if (stationData) {
-                        const currentAQHI = stationData.Aqhi || "N/A";
-                        const forecastToday = stationData.ForecastToday || "N/A";
-                        const forecastTonight = stationData.ForecastTonight || "N/A";                        
-                        const forecastTomorrow = stationData.ForecastTomorrow || "N/A";
+                        const currentAQHI = stationData.Aqhi || "Not Available";
+                        const forecastToday = stationData.ForecastToday || "Forecast Unavailable";
+                        const forecastTonight = stationData.ForecastTonight || "Forecast Unavailable";
+                        const forecastTomorrow = stationData.ForecastTomorrow || "Forecast Unavailable";
                         const readingDate = stationData.ReadingDate ? new Date(stationData.ReadingDate).toLocaleString() : "N/A";
 
                         const row = document.createElement('tr');
@@ -115,8 +115,8 @@
                             <td style="background-color: ${getAQHIColor(currentAQHI)}">${currentAQHI}</td>
                             <td>${readingDate}</td>
                             <td style="background-color: ${getAQHIColor(forecastToday)}">${forecastToday}</td>
-                            <td style="background-color: ${getAQHIColor(forecastTonight)}">${forecastTonight}</td>                            
-                            <td style="background-color: ${getAQHIColor(forecastTomorrow)}">${forecastTomorrow}</td> 
+                            <td style="background-color: ${getAQHIColor(forecastTonight)}">${forecastTonight}</td>
+                            <td style="background-color: ${getAQHIColor(forecastTomorrow)}">${forecastTomorrow}</td>
                         `;
                         tableBody.appendChild(row);
                     } else {
