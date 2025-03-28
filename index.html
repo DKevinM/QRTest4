@@ -12,6 +12,14 @@
         h1 { font-size: 5px; margin-bottom: 10px; }
         table { margin: 5px auto; border-collapse: collapse; width: 95%; max-width: 180px; }
         th, td { padding: 3px; border: 1px solid #ddd; text-align: center; font-size: 12px; }
+
+        td:nth-child(1) { font-weight: bold;  font-size: 12px; }
+        td:nth-child(2) { font-weight: bold;  font-size: 5px; }
+        td:nth-child(3) { font-size: 10px; }
+        td:nth-child(4),
+        td:nth-child(5),
+        td:nth-child(6) { font-size: 12px; }
+        
         th { background-color: #f4f4f4; }
         td.date-time-column { 
             width: 160px; /* Set a wider column for date/time */
@@ -109,16 +117,36 @@
                         const forecastTomorrow = stationData.ForecastTomorrow || "Forecast Unavailable";
                         const readingDate = stationData.ReadingDate ? new Date(stationData.ReadingDate).toLocaleString() : "N/A";
 
+                        const allUnavailable = (
+                            forecastToday === "Forecast Unavailable" &&
+                            forecastTonight === "Forecast Unavailable" &&
+                            forecastTomorrow === "Forecast Unavailable"
+                        );
+                        
                         const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${stationName}</td>
-                            <td style="background-color: ${getAQHIColor(currentAQHI)}">${currentAQHI}</td>
-                            <td>${readingDate}</td>
-                            <td style="background-color: ${getAQHIColor(forecastToday)}">${forecastToday}</td>
-                            <td style="background-color: ${getAQHIColor(forecastTonight)}">${forecastTonight}</td>
-                            <td style="background-color: ${getAQHIColor(forecastTomorrow)}">${forecastTomorrow}</td>
-                        `;
-                        tableBody.appendChild(row);
+
+                // Start building the row
+                let rowHTML = `
+                    <td>${stationName}</td>
+                    <td style="background-color: ${getAQHIColor(currentAQHI)}">${currentAQHI}</td>
+                    <td>${readingDate}</td>
+                `;
+
+                if (allUnavailable) {
+                    // One merged cell
+                    rowHTML += `<td colspan="3" style="text-align:center;">Forecast Unavailable</td>`;
+                } else {
+                    // Three individual forecast cells
+                    rowHTML += `
+                        <td style="background-color: ${getAQHIColor(forecastToday)}">${forecastToday}</td>
+                        <td style="background-color: ${getAQHIColor(forecastTonight)}">${forecastTonight}</td>
+                        <td style="background-color: ${getAQHIColor(forecastTomorrow)}">${forecastTomorrow}</td>
+                    `;
+                }
+
+                row.innerHTML = rowHTML;
+                tableBody.appendChild(row);
+            } else {
                     } else {
                         console.warn(`No data found for station: ${stationName}`);
                     }
